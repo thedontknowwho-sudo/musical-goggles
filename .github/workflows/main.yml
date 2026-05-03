@@ -1,0 +1,26 @@
+name: Build Mod
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download mod source
+        run: |
+          curl -L "https://github.com/thedontknowwho-sudo/musical-goggles/raw/main/not-your-friend-mod-source.zip" -o mod.zip || true
+          unzip mod.zip || true
+          cp -r not-your-friend/* . || true
+
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - run: chmod +x gradlew
+      - run: ./gradlew build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: not-your-friend-jar
+          path: build/libs/*.jar
